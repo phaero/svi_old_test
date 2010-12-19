@@ -35,41 +35,59 @@ def _run_astyle(bld):
 					)
 				Utils.pproc.Popen(cmd, shell=True).wait()
 
-def set_options(opt):
-	opt.tool_options('compiler_cc')
+def options(opt):
+	opt.tool_options('compiler_c')
 
 	opt.add_option('--cppcheck', default=False, dest='cppcheck', action='store_true')
 
 def configure(conf):
-	conf.check_tool('compiler_cc')
+	conf.check_tool('compiler_c')
 
 	conf.find_program('cppcheck', var='CPPCHECK')
 	conf.find_program('astyle', var='ASTYLE')
 
 def build(bld):
-	if Options.options.cppcheck:
-		bld.add_pre_fun(_run_cppcheck)
+	bld(
+		includes        = '. src',
+		export_includes = 'src',
+		name            = 'com_includes')
 
-	bld.add_pre_fun(_run_astyle)
+	bld.stlib(
+		source          = 'a.c',
+		target          = 'shlib1',
+		use             = 'com_includes')
 
-	bld.new_task_gen(
-			features = 'cc cprogram',
-			source = bld.path.ant_glob('src/*.c'),
-			target = APPNAME,
-			uselib = [],
-			includes = './src /usr/include',
-			#ccflags = [ '-Wall', '-pedantic', '-std=c99', '-g', '-pg', ],
-			ccflags = [ '-Wall', '-pedantic', '-std=c99', '-g', ],
-			#linkflags = [ '-g', '-pg', ],
+	bld.program(
+		source          = 'main.c',
+		target          = 'app',
+		use             = 'shlib1',
 		)
 
-	bld.new_task_gen(
-			features = 'cc cprogram',
-			source = bld.path.ant_glob( 'src/**/*.c' ),
-			target = '%s_ut' % APPNAME,
-			uselib = [],
-			includes = './src /usr/include',
+
+def build(bld):
+	#if Options.options.cppcheck:
+		#bld.add_pre_fun(_run_cppcheck)
+
+	#bld.add_pre_fun(_run_astyle)
+
+	#bld.stlib(
+	#		source = 'src/seatest/seatest.c',
+	#		target = 'seatest',
+	#	)
+
+	#bld.program(
+	#		source = bld.path.ant_glob( 'src/ut/*.c' ),
+	#		target = '%s_ut' % APPNAME,
+	#		use = 'seatest',
+	#		includes = [ 'src/seatest', 'src/ut', 'src', '/usr/include', ],
+	#		cflags = [ '-Wall', '-pedantic', '-std=c99', '-g', ],
+	#	)
+
+	bld.program(
+			source = bld.path.ant_glob('src/*.c'),
+			target = APPNAME,
+			includes = 'src /usr/include',
 			#ccflags = [ '-Wall', '-pedantic', '-std=c99', '-g', '-pg', ],
-			ccflags = [ '-Wall', '-pedantic', '-std=c99', '-g', ],
+			cflags = [ '-Wall', '-pedantic', '-std=c99', '-g', ],
 			#linkflags = [ '-g', '-pg', ],
 		)
