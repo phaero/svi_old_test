@@ -70,21 +70,21 @@ def build(bld):
 
 	#bld.add_pre_fun(_run_astyle)
 
-	#bld.stlib(
-	#		source = 'src/seatest/seatest.c',
-	#		target = 'seatest',
-	#	)
-
-	#bld.program(
-	#		source = bld.path.ant_glob( 'src/ut/*.c' ),
-	#		target = '%s_ut' % APPNAME,
-	#		use = 'seatest',
-	#		includes = [ 'src/seatest', 'src/ut', 'src', '/usr/include', ],
-	#		cflags = [ '-Wall', '-pedantic', '-std=c99', '-g', ],
-	#	)
+	bld.stlib(
+			source = 'seatest/seatest.c',
+			target = 'seatest',
+		)
 
 	bld.program(
-			source = bld.path.ant_glob('src/*.c'),
+			source = bld.path.ant_glob( 'src/*.c', excl=['src/main.c',] ),
+			target = '%s_ut' % APPNAME,
+			use = 'seatest',
+			includes = [ 'seatest', 'src', '/usr/include', ],
+			cflags = [ '-Wall', '-pedantic', '-std=c99', '-g', ],
+		)
+
+	bld.program(
+			source = bld.path.ant_glob('src/*.c', excl=['src/*_test.c',]),
 			target = APPNAME,
 			includes = 'src /usr/include',
 			#ccflags = [ '-Wall', '-pedantic', '-std=c99', '-g', '-pg', ],
