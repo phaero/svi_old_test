@@ -4,13 +4,27 @@
 
 #include <seatest.h>
 
-void test_strings_equal()
+void test_strings_equal( void );
+void test_arrays_equal( void );
+void test_bits( void );
+void test_strings( void );
+
+void buffer_tests( void )
+{
+	test_fixture_start();               // starts a fixture
+	run_test(test_strings);   // run tests
+	run_test(test_arrays_equal);
+	run_test(test_bits);
+	test_fixture_end();                 // ends a fixture
+}
+
+void test_strings_equal( void )
 {
 	char *s = "hello";
 	assert_string_equal("hello", s);
 }
 
-void test_arrays_equal()
+void test_arrays_equal( void )
 {
 	unsigned char expected_bytes[] = { 1, 2, 3};
 	unsigned char buffer[5];
@@ -23,14 +37,14 @@ void test_arrays_equal()
 	assert_n_array_equal(expected_bytes, buffer, 3);
 }
 
-void test_bits()
+void test_bits( void )
 {
 	assert_bit_set(0, 0x01);
 	assert_bit_set(2, 0x04);
 	assert_bit_not_set(3, 0x02);    
 }
 
-void test_strings()
+void test_strings( void )
 {
 	char *s = "hello";
 	assert_string_equal("hello", s);
@@ -38,14 +52,4 @@ void test_strings()
 	assert_string_doesnt_contain("blah", "why say hello?");
 	assert_string_ends_with("h?", "why say blah?");
 	assert_string_starts_with("why", "why say blah?");
-}
-
-
-void svi_buf_tests( void )
-{
-	test_fixture_start();               // starts a fixture
-	run_test(test_strings);   // run tests
-	run_test(test_arrays_equal);
-	run_test(test_bits);
-	test_fixture_end();                 // ends a fixture
 }

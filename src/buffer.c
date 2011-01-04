@@ -14,6 +14,8 @@ struct buffer {
 	uint64_t grow_size;
 };
 
+void buffer_init( struct buffer* buf );
+
 void buffer_init( struct buffer* buf )
 {
 	buf->body = NULL;

@@ -1,10 +1,10 @@
 #include <seatest.h>
 
-void svi_buf_tests( void );
+void buffer_tests( void );
 
 void all_tests( void )
 {
-	svi_buf_tests();
+	buffer_tests();
 }
 
 int main( int argc, char* argv[] ) {
