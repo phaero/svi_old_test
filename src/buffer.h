@@ -5,9 +5,8 @@
 
 struct buffer;
 
-void buffer_init( struct buffer* buf );
 struct buffer* buffer_new( void );
-void buffer_del( struct buffer* buf );
+void buffer_del( struct buffer** buf );
 uint64_t buffer_length( struct buffer* buf );
 void buffer_gap_to( struct buffer* buf, uint64_t position );
 void buffer_room_for( struct buffer* buf, uint64_t length );

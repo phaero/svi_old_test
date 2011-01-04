@@ -14,7 +14,7 @@ int main( int argc, char* argv[] )
 	buffer_insert_from_array( buf, buffer_length( buf ), "Hello World!", 0, 12 );
 	printf( "%s\n", buffer_pointer( buf ) );
 
-	buffer_del( buf );
+	buffer_del( &buf );
 
 	return 0;
 }

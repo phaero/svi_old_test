@@ -34,10 +34,13 @@ struct buffer* buffer_new( void ) {
 	return buf;
 }
 
-void buffer_del( struct buffer* buf )
+void buffer_del( struct buffer** buf )
 {
-	free( buf->body );
-	free( buf );
+	free( (*buf)->body );
+	free( *buf );
+
+	// Don't leave a pointer to a delete object, makes error checking easier
+	*buf = NULL;
 }
 
 uint64_t buffer_length( struct buffer* buf )

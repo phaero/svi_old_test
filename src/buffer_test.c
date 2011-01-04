@@ -8,13 +8,16 @@ void test_strings_equal( void );
 void test_arrays_equal( void );
 void test_bits( void );
 void test_strings( void );
+void test_create_delete_buffer( void );
 
 void buffer_tests( void )
 {
 	test_fixture_start();               // starts a fixture
-	run_test(test_strings);   // run tests
+	run_test(test_strings_equal);
 	run_test(test_arrays_equal);
 	run_test(test_bits);
+	run_test(test_strings);   // run tests
+	run_test(test_create_delete_buffer);
 	test_fixture_end();                 // ends a fixture
 }
 
@@ -52,4 +55,15 @@ void test_strings( void )
 	assert_string_doesnt_contain("blah", "why say hello?");
 	assert_string_ends_with("h?", "why say blah?");
 	assert_string_starts_with("why", "why say blah?");
+}
+
+void test_create_delete_buffer( void )
+{
+	struct buffer* buf = NULL;
+
+	buf = buffer_new();
+	assert_true( buf != NULL );
+
+	buffer_del( &buf );
+	assert_true( buf == NULL );
 }
