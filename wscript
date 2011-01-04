@@ -46,23 +46,22 @@ def configure(conf):
 	conf.find_program('cppcheck', var='CPPCHECK')
 	conf.find_program('astyle', var='ASTYLE')
 
-def build(bld):
-	bld(
-		includes        = '. src',
-		export_includes = 'src',
-		name            = 'com_includes')
-
-	bld.stlib(
-		source          = 'a.c',
-		target          = 'shlib1',
-		use             = 'com_includes')
-
-	bld.program(
-		source          = 'main.c',
-		target          = 'app',
-		use             = 'shlib1',
-		)
-
+#def build(bld):
+#	bld(
+#		includes        = '. src',
+#		export_includes = 'src',
+#		name            = 'com_includes')
+#
+#	bld.stlib(
+#		source          = 'a.c',
+#		target          = 'shlib1',
+#		use             = 'com_includes')
+#
+#	bld.program(
+#		source          = 'main.c',
+#		target          = 'app',
+#		use             = 'shlib1',
+#		)
 
 def build(bld):
 	#if Options.options.cppcheck:
