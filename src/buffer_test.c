@@ -10,15 +10,25 @@ void test_bits( void );
 void test_strings( void );
 void test_create_delete_buffer( void );
 
+void setup_create( void );
+void teardown_delete( void );
+void test_empty_length( void );
+
 void buffer_tests( void )
 {
-	test_fixture_start();               // starts a fixture
+	test_fixture_start();
 	run_test(test_strings_equal);
 	run_test(test_arrays_equal);
 	run_test(test_bits);
-	run_test(test_strings);   // run tests
+	run_test(test_strings);
 	run_test(test_create_delete_buffer);
-	test_fixture_end();                 // ends a fixture
+	test_fixture_end();
+
+	test_fixture_start();
+	fixture_setup( setup_create );
+	fixture_teardown( teardown_delete );
+	run_test(test_empty_length);
+	test_fixture_end();
 }
 
 void test_strings_equal( void )
@@ -66,4 +76,23 @@ void test_create_delete_buffer( void )
 
 	buffer_del( &buf );
 	assert_true( buf == NULL );
+
+	// This shouldn't crash
+	buffer_del( NULL );
+}
+
+struct buffer* test_buffer_ = NULL;
+void setup_create( void )
+{
+	test_buffer_ = buffer_new();
+}
+
+void teardown_delete( void )
+{
+	buffer_del( &test_buffer_ );
+}
+
+void test_empty_length( void )
+{
+	assert_true( buffer_length( test_buffer_ ) == 0 );
 }

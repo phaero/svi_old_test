@@ -36,6 +36,10 @@ struct buffer* buffer_new( void ) {
 
 void buffer_del( struct buffer** buf )
 {
+	if( buf == NULL || *buf == NULL ) {
+		return;
+	}
+
 	free( (*buf)->body );
 	free( *buf );
 
