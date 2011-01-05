@@ -72,6 +72,8 @@ def build(bld):
 	bld.stlib(
 			source = 'seatest/seatest.c',
 			target = 'seatest',
+			includes = 'seatest /usr/include',
+			cflags = [ '-Wall', '-Wextra', '-pedantic', '-std=c99', '-g' ],
 		)
 
 	bld.program(
@@ -79,7 +81,7 @@ def build(bld):
 			target = '%s_ut' % APPNAME,
 			use = 'seatest',
 			includes = [ 'seatest', 'src', '/usr/include', ],
-			cflags = [ '-Wall', '-pedantic', '-std=c99', '-g', ],
+			cflags = [ '-Wall', '-Wextra', '-pedantic', '-std=c99', '-g', ],
 		)
 
 	bld.program(
@@ -87,6 +89,6 @@ def build(bld):
 			target = APPNAME,
 			includes = 'src /usr/include',
 			#ccflags = [ '-Wall', '-pedantic', '-std=c99', '-g', '-pg', ],
-			cflags = [ '-Wall', '-pedantic', '-std=c99', '-g', ],
+			cflags = [ '-Wall', '-Wextra', '-pedantic', '-std=c99', '-g', ],
 			#linkflags = [ '-g', '-pg', ],
 		)
