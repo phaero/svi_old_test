@@ -2,11 +2,9 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <stdint.h>
 
-unsigned int GetTickCount()
-{
-	return 0;
-}
+#include <sys/time.h>
 
 static int sea_tests_run = 0;
 static int sea_tests_passed = 0;
@@ -192,10 +190,19 @@ int seatest_should_run( char* fixture, char* test)
 
 int run_tests(void (*tests)(void))
 {
-	unsigned long end;
-	unsigned long start = GetTickCount();
+	uint64_t start;
+	uint64_t end;
+	struct timeval tv;
+
+	gettimeofday( &tv, NULL );
+	start = tv.tv_sec * 1000000 + tv.tv_usec;
+
+	// Run tests
 	tests();
-	end = GetTickCount();
+
+	gettimeofday( &tv, NULL );
+	end = tv.tv_sec * 1000000 + tv.tv_usec;
+
 	printf("\r\n\r\n==================================================\r\n");
 	if (sea_tests_failed > 0) {
 		printf("                      Failed\r\n");
@@ -203,7 +210,7 @@ int run_tests(void (*tests)(void))
 		printf("               ALL TESTS PASSED\r\n");
 	}
 	printf("                 %d tests run\r\n", sea_tests_run);
-	printf("                    in %lu ms\r\n",end - start);
+	printf("                    in %llu ms\r\n", end - start );
 	printf("==================================================\r\n");
 
 	return sea_tests_failed == 0;
