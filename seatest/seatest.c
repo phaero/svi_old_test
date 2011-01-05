@@ -117,14 +117,14 @@ void seatest_assert_string_contains(char* expected, char* actual, const char* fu
 {
 	char s[100];
 	sprintf(s, "Expected %s to be in %s", expected, actual);
-	seatest_simple_test_result(strstr(expected, actual)!=0, s, function, line);
+	seatest_simple_test_result(strstr(actual, expected)!=NULL, s, function, line);
 }
 
 void seatest_assert_string_doesnt_contain(char* expected, char* actual, const char* function, unsigned int line)
 {
 	char s[100];
 	sprintf(s, "Expected %s not to have %s in it", actual, expected);
-	seatest_simple_test_result(strstr(expected, actual)==0, s, function, line);
+	seatest_simple_test_result(strstr(actual, expected)==NULL, s, function, line);
 }
 
 void seatest_run_test(void)
