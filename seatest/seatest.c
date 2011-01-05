@@ -1,5 +1,6 @@
 #include "seatest.h"
 
+#include <stdio.h>
 #include <string.h>
 
 unsigned int GetTickCount()
@@ -202,7 +203,7 @@ int run_tests(void (*tests)(void))
 		printf("               ALL TESTS PASSED\r\n");
 	}
 	printf("                 %d tests run\r\n", sea_tests_run);
-	printf("                    in %d ms\r\n",end - start);
+	printf("                    in %lu ms\r\n",end - start);
 	printf("==================================================\r\n");
 
 	return sea_tests_failed == 0;
