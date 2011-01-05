@@ -45,7 +45,7 @@ char* test_file_name(char* path)
 static int seatest_fixture_tests_run;
 static int seatest_fixture_tests_failed;
 
-void seatest_simple_test_result(int passed, char* reason, char* function, unsigned int line)
+void seatest_simple_test_result(int passed, char* reason, const char* function, unsigned int line)
 {
 	if (!passed) {
 		printf("%-20s Line %-5d %s\r\n", function, line, reason );
@@ -55,26 +55,26 @@ void seatest_simple_test_result(int passed, char* reason, char* function, unsign
 	}
 }
 
-void seatest_assert_true(int test, char* function, unsigned int line)
+void seatest_assert_true(int test, const char* function, unsigned int line)
 {
 	seatest_simple_test_result(test, "Should of been true", function, line);
 
 }
 
-void seatest_assert_false(int test, char* function, unsigned int line)
+void seatest_assert_false(int test, const char* function, unsigned int line)
 {
 	seatest_simple_test_result(!test, "Should of been false", function, line);
 }
 
 
-void seatest_assert_int_equal(int expected, int actual, char* function, unsigned int line)
+void seatest_assert_int_equal(int expected, int actual, const char* function, unsigned int line)
 {
 	char s[100];
 	sprintf(s, "Expected %d but was %d", expected, actual);
 	seatest_simple_test_result(expected==actual, s, function, line);
 }
 
-void seatest_assert_float_equal( float expected, float actual, float delta, char* function, unsigned int line )
+void seatest_assert_float_equal( float expected, float actual, float delta, const char* function, unsigned int line )
 {
 	char s[100];
 	float result = expected-actual;
@@ -83,7 +83,7 @@ void seatest_assert_float_equal( float expected, float actual, float delta, char
 	seatest_simple_test_result( result <= delta, s, function, line);
 }
 
-void seatest_assert_double_equal( double expected, double actual, double delta, char* function, unsigned int line )
+void seatest_assert_double_equal( double expected, double actual, double delta, const char* function, unsigned int line )
 {
 	char s[100];
 	double result = expected-actual;
@@ -92,35 +92,35 @@ void seatest_assert_double_equal( double expected, double actual, double delta, 
 	seatest_simple_test_result( result <= delta, s, function, line);
 }
 
-void seatest_assert_string_equal(char* expected, char* actual, char* function, unsigned int line)
+void seatest_assert_string_equal(char* expected, char* actual, const char* function, unsigned int line)
 {
 	char s[100];
 	sprintf(s, "Expected %s but was %s", expected, actual);
 	seatest_simple_test_result(strcmp(expected, actual)==0, s, function, line);
 }
 
-void seatest_assert_string_ends_with(char* expected, char* actual, char* function, unsigned int line)
+void seatest_assert_string_ends_with(char* expected, char* actual, const char* function, unsigned int line)
 {
 	char s[100];
 	sprintf(s, "Expected %s to end with %s", actual, expected);
 	seatest_simple_test_result(strcmp(expected, actual+(strlen(actual)-strlen(expected)))==0, s, function, line);
 }
 
-void seatest_assert_string_starts_with(char* expected, char* actual, char* function, unsigned int line)
+void seatest_assert_string_starts_with(char* expected, char* actual, const char* function, unsigned int line)
 {
 	char s[100];
 	sprintf(s, "Expected %s to start with %s", actual, expected);
 	seatest_simple_test_result(strncmp(expected, actual, strlen(expected))==0, s, function, line);
 }
 
-void seatest_assert_string_contains(char* expected, char* actual, char* function, unsigned int line)
+void seatest_assert_string_contains(char* expected, char* actual, const char* function, unsigned int line)
 {
 	char s[100];
 	sprintf(s, "Expected %s to be in %s", expected, actual);
 	seatest_simple_test_result(strstr(expected, actual)!=0, s, function, line);
 }
 
-void seatest_assert_string_doesnt_contain(char* expected, char* actual, char* function, unsigned int line)
+void seatest_assert_string_doesnt_contain(char* expected, char* actual, const char* function, unsigned int line)
 {
 	char s[100];
 	sprintf(s, "Expected %s not to have %s in it", actual, expected);

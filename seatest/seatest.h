@@ -8,17 +8,17 @@ Declarations
 
 void seatest_test_fixture_start(char* filepath);
 void seatest_test_fixture_end( void );
-void seatest_simple_test_result(int passed, char* reason, char* function, unsigned int line);
-void seatest_assert_true(int test, char* function, unsigned int line);
-void seatest_assert_false(int test, char* function, unsigned int line);
-void seatest_assert_int_equal(int expected, int actual, char* function, unsigned int line);
-void seatest_assert_float_equal(float expected, float actual, float delta, char* function, unsigned int line);
-void seatest_assert_double_equal(double expected, double actual, double delta, char* function, unsigned int line);
-void seatest_assert_string_equal(char* expected, char* actual, char* function, unsigned int line);
-void seatest_assert_string_ends_with(char* expected, char* actual, char* function, unsigned int line);
-void seatest_assert_string_starts_with(char* expected, char* actual, char* function, unsigned int line);
-void seatest_assert_string_contains(char* expected, char* actual, char* function, unsigned int line);
-void seatest_assert_string_doesnt_contain(char* expected, char* actual, char* function, unsigned int line);
+void seatest_simple_test_result(int passed, char* reason, const char* function, unsigned int line);
+void seatest_assert_true(int test, const char* function, unsigned int line);
+void seatest_assert_false(int test, const char* function, unsigned int line);
+void seatest_assert_int_equal(int expected, int actual, const char* function, unsigned int line);
+void seatest_assert_float_equal(float expected, float actual, float delta, const char* function, unsigned int line);
+void seatest_assert_double_equal(double expected, double actual, double delta, const char* function, unsigned int line);
+void seatest_assert_string_equal(char* expected, char* actual, const char* function, unsigned int line);
+void seatest_assert_string_ends_with(char* expected, char* actual, const char* function, unsigned int line);
+void seatest_assert_string_starts_with(char* expected, char* actual, const char* function, unsigned int line);
+void seatest_assert_string_contains(char* expected, char* actual, const char* function, unsigned int line);
+void seatest_assert_string_doesnt_contain(char* expected, char* actual, const char* function, unsigned int line);
 int seatest_should_run( char* fixture, char* test);
 void seatest_run_test(void);
 void seatest_setup();
