@@ -9,6 +9,7 @@ void test_arrays_equal( void );
 void test_bits( void );
 void test_strings( void );
 void test_create_delete_buffer( void );
+void test_delete_invalid_buffer( void );
 
 void setup_create( void );
 void teardown_delete( void );
@@ -22,6 +23,7 @@ void buffer_tests( void )
 	run_test(test_bits);
 	run_test(test_strings);
 	run_test(test_create_delete_buffer);
+	run_test(test_delete_invalid_buffer);
 	test_fixture_end();
 
 	test_fixture_start();
@@ -76,9 +78,15 @@ void test_create_delete_buffer( void )
 
 	buffer_del( &buf );
 	assert_true( buf == NULL );
+}
+
+void test_delete_invalid_buffer( void )
+{
+	struct buffer* buf = NULL;
 
 	// This shouldn't crash
 	buffer_del( NULL );
+	buffer_del( &buf );
 }
 
 struct buffer* test_buffer_ = NULL;
