@@ -155,7 +155,7 @@ void buffer_insert_value( struct buffer* buf, uint64_t position, uint64_t insert
 		buffer_room_for( buf, insert_length );
 		buffer_gap_to( buf, position );
 
-		for ( int i = 0; i < insert_length; i++ ) {
+		for ( uint64_t i = 0; i < insert_length; i++ ) {
 			buf->body[ buf->gap_start + i ] = value;
 		}
 
