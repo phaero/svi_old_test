@@ -119,6 +119,11 @@ void fixture_teardown(void (*teardown)( void ));
 void fixture_filter(char* filter);
 void test_filter(char* filter);
 
-int run_tests(void (*tests)(void));
+typedef void (*seatest_test_suite_fp)( void );
+int seatest_internal_main( int argc, char* argv[], int num, ... );
+#define NUMARGS(...)  (sizeof((seatest_test_suite_fp[]){__VA_ARGS__})/sizeof(seatest_test_suite_fp))
+#define test_suites(...) int main( int argc, char* argv[] ) { \
+	return seatest_internal_main( argc, argv, NUMARGS(__VA_ARGS__), __VA_ARGS__ ); \
+}
 
 #endif

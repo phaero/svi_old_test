@@ -2,7 +2,9 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <stdarg.h>
 #include <stdint.h>
+#include <inttypes.h>
 
 #include <sys/time.h>
 
@@ -11,8 +13,10 @@ static int sea_tests_passed = 0;
 static int sea_tests_failed = 0;
 static char* seatest_current_fixture;
 
-static void (*seatest_fixture_setup)( void ) = 0;
-static void (*seatest_fixture_teardown)( void ) = 0;
+static void (*seatest_fixture_setup)( void ) = NULL;
+static void (*seatest_fixture_teardown)( void ) = NULL;
+
+int run_tests( seatest_test_suite_fp tests );
 
 void fixture_setup(void (*setup)( void ))
 {
@@ -25,19 +29,30 @@ void fixture_teardown(void (*teardown)( void ))
 
 void seatest_setup()
 {
-	if (seatest_fixture_setup != 0) seatest_fixture_setup();
+	if (seatest_fixture_setup != NULL) {
+		seatest_fixture_setup();
+	}
 }
 
 void seatest_teardown()
 {
-	if (seatest_fixture_teardown != 0) seatest_fixture_teardown();
+	if (seatest_fixture_teardown != NULL) {
+		seatest_fixture_teardown();
+	}
 }
 
 char* test_file_name(char* path)
 {
 	char* file = path + strlen(path);
-	while (file != path && *file!= '\\' ) file--;
-	if (*file == '\\') file++;
+
+	while (file != path && *file!= '\\' ) {
+		file--;
+	}
+
+	if (*file == '\\') {
+		file++;
+	}
+
 	return file;
 }
 
@@ -57,7 +72,6 @@ void seatest_simple_test_result(int passed, char* reason, const char* function, 
 void seatest_assert_true(int test, const char* function, unsigned int line)
 {
 	seatest_simple_test_result(test, "Should of been true", function, line);
-
 }
 
 void seatest_assert_false(int test, const char* function, unsigned int line)
@@ -78,7 +92,11 @@ void seatest_assert_float_equal( float expected, float actual, float delta, cons
 	char s[100];
 	float result = expected-actual;
 	sprintf(s, "Expected %f but was %f", expected, actual);
-	if (result < 0.0) result = 0.0 - result;
+
+	if (result < 0.0) {
+		result = 0.0 - result;
+	}
+
 	seatest_simple_test_result( result <= delta, s, function, line);
 }
 
@@ -87,7 +105,11 @@ void seatest_assert_double_equal( double expected, double actual, double delta, 
 	char s[100];
 	double result = expected-actual;
 	sprintf(s, "Expected %f but was %f", expected, actual);
-	if (result < 0.0) result = 0.0 - result;
+
+	if (result < 0.0) {
+		result = 0.0 - result;
+	}
+
 	seatest_simple_test_result( result <= delta, s, function, line);
 }
 
@@ -136,9 +158,17 @@ void seatest_header_printer(char* s, int length, char f)
 	int l = strlen(s);
 	int d = (length- (l + 2)) / 2;
 	int i;
-	for (i = 0; i<d; i++) printf("%c",f);
+
+	for (i = 0; i<d; i++) {
+		printf("%c",f);
+	}
+
 	printf(" %s ", s);
-	for (i = (d+l+2); i<length; i++) printf("%c",f);
+
+	for (i = (d+l+2); i<length; i++) {
+		printf("%c",f);
+	}
+
 	printf("\r\n");
 }
 
@@ -188,7 +218,7 @@ int seatest_should_run( char* fixture, char* test)
 	return run;
 }
 
-int run_tests(void (*tests)(void))
+int run_tests( seatest_test_suite_fp tests )
 {
 	uint64_t start;
 	uint64_t end;
@@ -210,9 +240,26 @@ int run_tests(void (*tests)(void))
 		printf("               ALL TESTS PASSED\r\n");
 	}
 	printf("                 %d tests run\r\n", sea_tests_run);
-	printf("                    in %llu ms\r\n", end - start );
+	printf("                    in %" PRIu64 " ms\r\n", end - start );
 	printf("==================================================\r\n");
 
 	return sea_tests_failed == 0;
 }
 
+int seatest_internal_main( int argc, char* argv[], int num, ... )
+{
+	va_list ap;
+	seatest_test_suite_fp fp;
+	int retval = 0;
+
+	va_start(ap, num);
+
+	for( int i = 0; i < num; i++) {
+		fp = va_arg(ap, seatest_test_suite_fp);
+		retval = run_tests(fp);
+	}
+
+	va_end(ap);
+
+	return retval;
+}

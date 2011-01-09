@@ -1,13 +1,16 @@
 #include <seatest.h>
 
+/**
+ * Declare the test registration functions here to avoid a extra header file for each test file.
+ */
+
 void buffer_tests( void );
 
-void all_tests( void )
-{
-	buffer_tests();
-}
-
-int main( int argc, char* argv[] ) {
-	return run_tests( all_tests );
-}
-
+/**
+ * Run all test suites.
+ *
+ * This will insert a main method!
+ */
+test_suites(
+		buffer_tests
+	)
