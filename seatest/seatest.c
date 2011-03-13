@@ -13,10 +13,15 @@ static int sea_tests_passed = 0;
 static int sea_tests_failed = 0;
 static char* seatest_current_fixture;
 
+struct seatest_test_suite {
+};
+
 static void (*seatest_fixture_setup)( void ) = NULL;
 static void (*seatest_fixture_teardown)( void ) = NULL;
 
 int run_tests( seatest_test_suite_fp tests );
+
+void register_tests( struct seatest_test_suite *test_suite, test_suite_fp suite_fp );
 
 void fixture_setup(void (*setup)( void ))
 {
@@ -246,20 +251,36 @@ int run_tests( seatest_test_suite_fp tests )
 	return sea_tests_failed == 0;
 }
 
+void register_tests( struct seatest_test_suite *test_suite, test_suite_fp suite_fp )
+{
+	// TODO Set current test suite
+}
+
 int seatest_internal_main( int argc, char* argv[], int num, ... )
 {
 	va_list ap;
 	seatest_test_suite_fp fp;
 	int retval = 0;
 
-	va_start(ap, num);
+	// TODO Parse arguments
+	//
+	// TODO Create test suite array
 
+	// TODO Register all testsuites
+	va_start(ap, num);
 	for( int i = 0; i < num; i++) {
 		fp = va_arg(ap, seatest_test_suite_fp);
 		retval = run_tests(fp);
 	}
-
 	va_end(ap);
+
+	// TODO Run all tests
+
+	// TODO Fix statistics
+
+	// TODO Generate rapport
+
+	// TODO Show result on stdout
 
 	return retval;
 }

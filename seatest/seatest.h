@@ -4,10 +4,37 @@
 /*
 Declarations
 */
+typedef void (*seatest_test_setup_fp)( void** data );
+typedef void (*seatest_test_test_fp)( void* data );
+typedef void (*seatest_test_teardown_fp)( void *data );
+
+void seatest_register_test_fixture(
+		const char* fname,
+		const char* test_name,
+		seatest_test_setup_fp* setup,
+		seatest_test_test_fp* test,
+		seatest_test_teardown_fp* teardown
+	);
+
+#define reg_test(test) do { \
+	seatest_register_test_fixture( __FILE__, #test, NULL, test, NULL ); \
+} while (0)
+
+#define reg_test_f(setup,test,teardown) do { \
+	seatest_register_test_fixture( __FILE__, #test, setup, test, teardown ); \
+} while (0)
 
 void seatest_test_fixture_start(char* filepath);
 void seatest_test_fixture_end( void );
 void seatest_simple_test_result(int passed, char* reason, const char* function, unsigned int line);
+int seatest_should_run( char* fixture, char* test);
+void seatest_run_test(void);
+void seatest_setup();
+void seatest_teardown();
+
+/*
+Assert Declarations/Macros
+*/
 void seatest_assert_true(int test, const char* function, unsigned int line);
 void seatest_assert_false(int test, const char* function, unsigned int line);
 void seatest_assert_int_equal(int expected, int actual, const char* function, unsigned int line);
@@ -18,14 +45,6 @@ void seatest_assert_string_ends_with(char* expected, char* actual, const char* f
 void seatest_assert_string_starts_with(char* expected, char* actual, const char* function, unsigned int line);
 void seatest_assert_string_contains(char* expected, char* actual, const char* function, unsigned int line);
 void seatest_assert_string_doesnt_contain(char* expected, char* actual, const char* function, unsigned int line);
-int seatest_should_run( char* fixture, char* test);
-void seatest_run_test(void);
-void seatest_setup();
-void seatest_teardown();
-
-/*
-Assert Macros
-*/
 
 #define assert_true(test) do { \
 	seatest_assert_true(test, __FUNCTION__, __LINE__); \
@@ -120,6 +139,7 @@ void fixture_filter(char* filter);
 void test_filter(char* filter);
 
 typedef void (*seatest_test_suite_fp)( void );
+typedef void (*test_suite_fp)( void );
 int seatest_internal_main( int argc, char* argv[], int num, ... );
 #define NUMARGS(...)  (sizeof((seatest_test_suite_fp[]){__VA_ARGS__})/sizeof(seatest_test_suite_fp))
 #define test_suites(...) int main( int argc, char* argv[] ) { \
