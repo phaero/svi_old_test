@@ -43,6 +43,7 @@ def options(opt):
 def configure(conf):
 	conf.check_tool('compiler_c')
 
+	conf.check_cfg(package='glib-2.0', args='--cflags --libs', uselib_store='glib', mandatory=True)
 	conf.find_program('cppcheck', var='CPPCHECK')
 	conf.find_program('astyle', var='ASTYLE')
 
@@ -72,6 +73,7 @@ def build(bld):
 	bld.stlib(
 			source = 'seatest/seatest.c',
 			target = 'seatest',
+			uselib = 'glib',
 			includes = 'seatest /usr/include',
 			cflags = [ '-Wall', '-Wextra', '-pedantic', '-std=c99', '-g' ],
 		)
@@ -80,6 +82,7 @@ def build(bld):
 			source = bld.path.ant_glob( 'src/*.c', excl=['src/main.c',] ),
 			target = '%s_ut' % APPNAME,
 			use = 'seatest',
+			uselib = 'glib',
 			includes = [ 'seatest', 'src', '/usr/include', ],
 			cflags = [ '-Wall', '-Wextra', '-pedantic', '-std=c99', '-g', ],
 		)
@@ -87,6 +90,7 @@ def build(bld):
 	bld.program(
 			source = bld.path.ant_glob('src/*.c', excl=['src/*_test.c',]),
 			target = APPNAME,
+			uselib = 'glib',
 			includes = 'src /usr/include',
 			#ccflags = [ '-Wall', '-pedantic', '-std=c99', '-g', '-pg', ],
 			cflags = [ '-Wall', '-Wextra', '-pedantic', '-std=c99', '-g', ],
