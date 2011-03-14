@@ -15,14 +15,15 @@ s_test_f(advanced,setup,teardown) {
 	void* data = s_get_data();
 }
 
-// Possible to generate?
+// Test group def, needs to be last in a file unless test groups are present
 s_test_group(
-		buffer_tests, // get from filename?
+		// Test group name, have it as a string instead to make it more clear?
+		buffer_tests, 
 		simple,
 		advanced
-	)
+	) // no semicolon
 
-// Possible to generate?
+// list of all test groups, doesn't need to be in the same file
 s_test_groups(
 		buffer_tests
-	)
+	) // no semicolon
