@@ -146,4 +146,27 @@ int seatest_internal_main( int argc, char* argv[], int num, ... );
 	return seatest_internal_main( argc, argv, NUMARGS(__VA_ARGS__), __VA_ARGS__ ); \
 }
 
+#define s_setup(name) static void s_setup_##name( void )
+
+#define s_teardown(name) static void s_teardown_##name( void )
+
+#define s_test(name) static void s_test_##name( void )
+
+#define s_test_f(name,setup,teardown) static void s_test_##name( void ) { \
+	s_setup_##setup(); \
+	s_test_f_##name(); \
+	s_teardown_##teardown(); \
+} \
+static void s_test_f_##name( void )
+
+#define s_def_test_group(name) void s_test_group_##name( void )
+
+#define s_test_group(name,...) void s_test_group_##name( void ) { \
+	s_internal_test_group( ##name, NUMARGS(__VA_ARGS__), __VA_ARGS__ ); \
+}
+
+#define s_test_groups(...) int main( int argc, char* argv[] ) { \
+	return s_internal_main( argc, argv, NUMARGS(__VA_ARGS__), __VA_ARGS__ ); \
+}
+
 #endif
