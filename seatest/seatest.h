@@ -4,26 +4,6 @@
 /*
 Declarations
 */
-typedef void (*seatest_test_setup_fp)( void** data );
-typedef void (*seatest_test_test_fp)( void* data );
-typedef void (*seatest_test_teardown_fp)( void *data );
-
-void seatest_register_test_fixture(
-		const char* fname,
-		const char* test_name,
-		seatest_test_setup_fp* setup,
-		seatest_test_test_fp* test,
-		seatest_test_teardown_fp* teardown
-	);
-
-#define reg_test(test) do { \
-	seatest_register_test_fixture( __FILE__, #test, NULL, test, NULL ); \
-} while (0)
-
-#define reg_test_f(setup,test,teardown) do { \
-	seatest_register_test_fixture( __FILE__, #test, setup, test, teardown ); \
-} while (0)
-
 void seatest_test_fixture_start(char* filepath);
 void seatest_test_fixture_end( void );
 void seatest_simple_test_result(int passed, char* reason, const char* function, unsigned int line);
@@ -113,60 +93,43 @@ void seatest_assert_string_doesnt_contain(char* expected, char* actual, const ch
 
 /*
 Fixture / Test Management
-*/
+#define NUMARGS(...)  (sizeof((s_test_register_fp[]){__VA_ARGS__})/sizeof(s_test_register_fp))
 
-void fixture_setup(void (*setup)( void ));
-void fixture_teardown(void (*teardown)( void ));
+#define s_setup(name) static void s_test_setup_##name( void )
 
-#define run_test(test) do { \
-	if(seatest_should_run(__FILE__, #test)) {\
-		seatest_setup(); \
-		test(); \
-		seatest_teardown(); \
-		seatest_run_test(); \
-	} \
-} while (0)
+#define s_teardown(name) static void s_test_teardown_##name( void )
 
-#define test_fixture_start() do { \
-	seatest_test_fixture_start(__FILE__); \
-} while (0)
-
-#define test_fixture_end() do { \
-	seatest_test_fixture_end(); \
-} while (0)
-
-void fixture_filter(char* filter);
-void test_filter(char* filter);
-
-typedef void (*seatest_test_suite_fp)( void );
-typedef void (*test_suite_fp)( void );
-int seatest_internal_main( int argc, char* argv[], int num, ... );
-#define NUMARGS(...)  (sizeof((seatest_test_suite_fp[]){__VA_ARGS__})/sizeof(seatest_test_suite_fp))
-#define test_suites(...) int main( int argc, char* argv[] ) { \
-	return seatest_internal_main( argc, argv, NUMARGS(__VA_ARGS__), __VA_ARGS__ ); \
-}
-
-#define s_setup(name) static void s_setup_##name( void )
-
-#define s_teardown(name) static void s_teardown_##name( void )
-
-#define s_test(name) static void s_test_##name( void )
-
-#define s_test_f(name,setup,teardown) static void s_test_##name( void ) { \
-	s_setup_##setup(); \
-	s_test_f_##name(); \
-	s_teardown_##teardown(); \
+#define s_test(name) static void s_test_##name( void ); \
+static void ##name( uint64_t* handle ) { \
+	s_internal_test( #name, handle, NULL, s_test_##name, NULL ); \
 } \
-static void s_test_f_##name( void )
+static void s_test_##name( void ) \
 
-#define s_def_test_group(name) void s_test_group_##name( void )
+#define s_test_f(name,setup,teardown) static void s_test_##name( void ); \
+static void ##name( uint64_t* handle ) { \
+	s_internal_test( #name, handle, s_test_setup_##setup, s_test_##name, s_test_teardown_##teardown ); \
+} \
+static void s_test_##name( void )
 
-#define s_test_group(name,...) void s_test_group_##name( void ) { \
-	s_internal_test_group( ##name, NUMARGS(__VA_ARGS__), __VA_ARGS__ ); \
+#define s_def_test_group(name) void s_test_group_##name( uint64_t* handle )
+
+#define s_test_group(name,...) void s_test_group_##name( uint64_t* handle ) { \
+	s_internal_test_group( #name, handle, NUMARGS(__VA_ARGS__), __VA_ARGS__ ); \
 }
 
 #define s_test_groups(...) int main( int argc, char* argv[] ) { \
 	return s_internal_main( argc, argv, NUMARGS(__VA_ARGS__), __VA_ARGS__ ); \
 }
+*/
+
+typedef void (*s_test_fp)( void* handle );
+void s_test_init( void** handle );
+void* s_test_get_data( void* handle );
+void s_test_set_data( void* handle, void* data );
+void s_test_add_test( void* handle, const char* test_name, s_test_fp test_func );
+void s_test_add_test_f( void* handle, const char* test_name,
+		s_test_fp test_func, s_test_fp test_setup, s_test_fp test_teardown );
+void s_test_add_group( void* handle, const char* group_name, s_test_fp test_group );
+int s_test_main( int argc, const char* argv[], void* handle );
 
 #endif

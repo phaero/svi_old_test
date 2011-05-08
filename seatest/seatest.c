@@ -4,24 +4,44 @@
 #include <string.h>
 #include <stdarg.h>
 #include <stdint.h>
+#include <stdbool.h>
 #include <inttypes.h>
 
 #include <sys/time.h>
+
+#include <glib.h>
+
+struct STest {
+	GSList* groups;
+};
+
+struct TestGroup {
+	gchar* name;
+	GSList* tests;
+};
+
+struct Test {
+	gchar* name;
+
+	s_test_fp setup;
+	s_test_fp test;
+	s_test_fp teardown;
+
+	void* data;
+
+	bool result;
+	GSList* result_msg;
+};
 
 static int sea_tests_run = 0;
 static int sea_tests_passed = 0;
 static int sea_tests_failed = 0;
 static char* seatest_current_fixture;
 
-struct seatest_test_suite {
-};
-
 static void (*seatest_fixture_setup)( void ) = NULL;
 static void (*seatest_fixture_teardown)( void ) = NULL;
 
-int run_tests( seatest_test_suite_fp tests );
-
-void register_tests( struct seatest_test_suite *test_suite, test_suite_fp suite_fp );
+int run_tests( s_test_fp tests );
 
 void fixture_setup(void (*setup)( void ))
 {
@@ -223,7 +243,7 @@ int seatest_should_run( char* fixture, char* test)
 	return run;
 }
 
-int run_tests( seatest_test_suite_fp tests )
+int run_tests( s_test_fp tests )
 {
 	uint64_t start;
 	uint64_t end;
@@ -233,7 +253,7 @@ int run_tests( seatest_test_suite_fp tests )
 	start = tv.tv_sec * 1000000 + tv.tv_usec;
 
 	// Run tests
-	tests();
+	/*tests();*/
 
 	gettimeofday( &tv, NULL );
 	end = tv.tv_sec * 1000000 + tv.tv_usec;
@@ -251,30 +271,95 @@ int run_tests( seatest_test_suite_fp tests )
 	return sea_tests_failed == 0;
 }
 
-void register_tests( struct seatest_test_suite *test_suite, test_suite_fp suite_fp )
-{
-	// TODO Set current test suite
+void s_test_init( void** handle ) {
+	struct STest* stest = g_new( struct STest, 1 );
+	*handle = stest;
 }
 
-int seatest_internal_main( int argc, char* argv[], int num, ... )
+void* s_test_get_data( void* handle ) {
+	struct Test* test = (struct Test*)handle;
+	return test->data;
+}
+
+void s_test_set_data( void* handle, void* data ) {
+	/*TODO Add warning if data is not deallocated in teardown*/
+	struct Test* test = (struct Test*)handle;
+	test->data = data;
+}
+
+void s_test_add_test( void* handle, const char* test_name, s_test_fp test_func ) {
+	struct TestGroup* group = (struct TestGroup*)handle;
+
+	/*Create test struct*/
+	struct Test* test = g_new( struct Test, 1 );
+	test->name = g_strndup( test_name, strlen( test_name ) );
+	test->setup = NULL;
+	test->test = test_func;
+	test->teardown = NULL;
+	test->data = NULL;
+	test->result = false;
+	test->result_msg = NULL;
+
+	group->tests = g_slist_append( group->tests, test );
+}
+
+void s_test_add_test_f( void* handle, const char* test_name,
+		s_test_fp test_func, s_test_fp test_setup, s_test_fp test_teardown ) {
+	struct TestGroup* group = (struct TestGroup*)handle;
+
+	/*Create test struct*/
+	struct Test* test = g_new( struct Test, 1 );
+	test->name = g_strndup( test_name, strlen( test_name ) );
+	test->setup = test_setup;
+	test->test = test_func;
+	test->teardown = test_teardown;
+	test->data = NULL;
+	test->result = false;
+	test->result_msg = NULL;
+
+	group->tests = g_slist_append( group->tests, test );
+}
+
+void s_test_add_group( void* handle, const char* group_name, s_test_fp test_group ) {
+	struct STest* stest = (struct STest*)handle;
+
+	/*Create a new test group*/
+	struct TestGroup* group = g_new( struct TestGroup, 1 );
+	group->name = g_strndup( group_name, strlen( group_name ) );
+	group->tests = NULL;
+
+	stest->groups = g_slist_append( stest->groups, group );
+
+	/*Call test group function to get all tests in group*/
+	test_group( (void*)group );
+}
+
+int s_test_main( int argc, const char* argv[], void* handle )
 {
-	va_list ap;
-	seatest_test_suite_fp fp;
 	int retval = 0;
+	struct STest* stest = (struct STest*)handle;
 
 	// TODO Parse arguments
-	//
-	// TODO Create test suite array
-
-	// TODO Register all testsuites
-	va_start(ap, num);
-	for( int i = 0; i < num; i++) {
-		fp = va_arg(ap, seatest_test_suite_fp);
-		retval = run_tests(fp);
-	}
-	va_end(ap);
 
 	// TODO Run all tests
+	GSList* group_iter = NULL;
+	GSList* test_iter = NULL;
+	for( group_iter = stest->groups; group_iter; group_iter = group_iter->next ) {
+		for( test_iter = ((struct TestGroup*)group_iter->data)->tests; test_iter;
+				test_iter = test_iter->next ) {
+			struct Test* test = (struct Test*)test_iter->data;
+			
+			if( test->setup ) {
+				test->setup( (void*)test );
+			}
+			
+			test->test( (void*)test );
+
+			if( test->teardown ) {
+				test->teardown( (void*)test );
+			}
+		}
+	}
 
 	// TODO Fix statistics
 

@@ -4,42 +4,35 @@
 
 #include <seatest.h>
 
-void test_strings_equal( void );
-void test_arrays_equal( void );
-void test_bits( void );
-void test_strings( void );
-void test_create_delete_buffer( void );
-void test_delete_invalid_buffer( void );
+void test_strings_equal( void* handle );
+void test_arrays_equal( void* handle );
+void test_bits( void* handle );
+void test_strings( void* handle );
+void test_create_delete_buffer( void* handle );
+void test_delete_invalid_buffer( void* handle );
 
-void setup_create( void );
-void teardown_delete( void );
-void test_empty_length( void );
+void setup_create( void* handle );
+void teardown_delete( void* handle );
+void test_empty_length( void* handle );
 
-void buffer_tests( void )
-{
-	test_fixture_start();
-	run_test(test_strings_equal);
-	run_test(test_arrays_equal);
-	run_test(test_bits);
-	run_test(test_strings);
-	run_test(test_create_delete_buffer);
-	run_test(test_delete_invalid_buffer);
-	test_fixture_end();
+void buffer_tests( void* handle ) {
+	s_test_add_test( handle, "strings_equal", test_strings_equal);
+	s_test_add_test( handle, "arrays_equal", test_arrays_equal);
+	s_test_add_test( handle, "bits", test_bits);
+	s_test_add_test( handle, "strings", test_strings);
+	s_test_add_test( handle, "create_delete_buffer", test_create_delete_buffer);
+	s_test_add_test( handle, "delete_invalid_buffer", test_delete_invalid_buffer);
 
-	test_fixture_start();
-	fixture_setup( setup_create );
-	fixture_teardown( teardown_delete );
-	run_test(test_empty_length);
-	test_fixture_end();
+	s_test_add_test_f( handle, "empty_length", test_empty_length, setup_create, teardown_delete );
 }
 
-void test_strings_equal( void )
+void test_strings_equal( void* handle )
 {
 	char *s = "hello";
 	assert_string_equal("hello", s);
 }
 
-void test_arrays_equal( void )
+void test_arrays_equal( void* handle )
 {
 	unsigned char expected_bytes[] = { 1, 2, 3};
 	unsigned char buffer[5];
@@ -52,14 +45,14 @@ void test_arrays_equal( void )
 	assert_n_array_equal(expected_bytes, buffer, 3);
 }
 
-void test_bits( void )
+void test_bits( void* handle )
 {
 	assert_bit_set(0, 0x01);
 	assert_bit_set(2, 0x04);
-	assert_bit_not_set(3, 0x02);    
+	assert_bit_not_set(3, 0x02);
 }
 
-void test_strings( void )
+void test_strings( void* handle )
 {
 	char *s = "hello";
 	assert_string_equal("hello", s);
@@ -69,7 +62,7 @@ void test_strings( void )
 	assert_string_starts_with("why", "why say blah?");
 }
 
-void test_create_delete_buffer( void )
+void test_create_delete_buffer( void* handle )
 {
 	struct buffer* buf = NULL;
 
@@ -80,7 +73,7 @@ void test_create_delete_buffer( void )
 	assert_true( buf == NULL );
 }
 
-void test_delete_invalid_buffer( void )
+void test_delete_invalid_buffer( void* handle )
 {
 	struct buffer* buf = NULL;
 
@@ -90,17 +83,17 @@ void test_delete_invalid_buffer( void )
 }
 
 struct buffer* test_buffer_ = NULL;
-void setup_create( void )
+void setup_create( void* handle )
 {
 	test_buffer_ = buffer_new();
 }
 
-void teardown_delete( void )
+void teardown_delete( void* handle )
 {
 	buffer_del( &test_buffer_ );
 }
 
-void test_empty_length( void )
+void test_empty_length( void* handle )
 {
 	assert_true( buffer_length( test_buffer_ ) == 0 );
 }

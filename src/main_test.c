@@ -1,16 +1,17 @@
+#include <stdio.h>
+
 #include <seatest.h>
 
 /**
- * Declare the test registration functions here to avoid a extra header file for each test file.
+ * Declare the test group functions here to avoid a extra header file for each test file.
  */
+extern void buffer_tests( void* handle );
 
-void buffer_tests( void );
+int main( int argc, const char* argv[] ) {
+	void* handle = NULL;
+	
+	s_test_init( &handle );
+	s_test_add_group( handle, "buffer_tests", buffer_tests );
 
-/**
- * Run all test suites.
- *
- * This will insert a main method!
- */
-test_suites(
-		buffer_tests
-	)
+	return s_test_main( argc, argv, handle );
+}
