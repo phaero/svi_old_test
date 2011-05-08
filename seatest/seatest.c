@@ -21,6 +21,14 @@ struct TestGroup {
 	GSList* tests;
 };
 
+struct TestResult {
+	bool passed;
+	GSList* msgs;
+
+	uint64_t start;
+	uint64_t end;
+};
+
 struct Test {
 	gchar* name;
 
@@ -30,8 +38,7 @@ struct Test {
 
 	void* data;
 
-	bool result;
-	GSList* result_msg;
+	struct TestResult result;
 };
 
 char* test_file_name(char* path)
@@ -58,10 +65,10 @@ void seatest_simple_test_result( void* handle, int passed, char* reason, const c
 
 		size_ = g_snprintf( msg_, 255, "%-20s Line %-5d %s\r\n", (char*)function, line, reason );
 
-		test->result = false;
-		test->result_msg = g_slist_append( test->result_msg, g_strndup( msg_, size_ ) );
+		test->result.passed = false;
+		test->result.msgs = g_slist_append( test->result.msgs, g_strndup( msg_, size_ ) );
 	} else {
-		test->result = test->result ? true : false;
+		test->result.passed = test->result.passed ? true : false;
 	}
 }
 
@@ -268,8 +275,10 @@ void s_test_add_test( void* handle, const char* test_name, s_test_fp test_func )
 	test->test = test_func;
 	test->teardown = NULL;
 	test->data = NULL;
-	test->result = true;
-	test->result_msg = NULL;
+	test->result.passed = true;
+	test->result.msgs = NULL;
+	test->result.start = 0;
+	test->result.end = 0;
 
 	group->tests = g_slist_append( group->tests, test );
 }
@@ -285,8 +294,10 @@ void s_test_add_test_f( void* handle, const char* test_name,
 	test->test = test_func;
 	test->teardown = test_teardown;
 	test->data = NULL;
-	test->result = true;
-	test->result_msg = NULL;
+	test->result.passed = true;
+	test->result.msgs = NULL;
+	test->result.start = 0;
+	test->result.end = 0;
 
 	group->tests = g_slist_append( group->tests, test );
 }
@@ -319,7 +330,11 @@ int s_test_main( int argc, const char* argv[], void* handle )
 		for( test_iter = ((struct TestGroup*)group_iter->data)->tests; test_iter;
 				test_iter = test_iter->next ) {
 			struct Test* test = (struct Test*)test_iter->data;
-			
+			struct timeval tv;
+
+			gettimeofday( &tv, NULL );
+			test->result.start = tv.tv_sec * 1000000 + tv.tv_usec;
+
 			if( test->setup ) {
 				test->setup( (void*)test );
 			}
@@ -329,6 +344,9 @@ int s_test_main( int argc, const char* argv[], void* handle )
 			if( test->teardown ) {
 				test->teardown( (void*)test );
 			}
+
+			gettimeofday( &tv, NULL );
+			test->result.end = tv.tv_sec * 1000000 + tv.tv_usec;
 		}
 	}
 
@@ -339,8 +357,10 @@ int s_test_main( int argc, const char* argv[], void* handle )
 			struct Test* test = (struct Test*)test_iter->data;
 			GSList* msg_iter = NULL;
 			
-			g_printf( "Test: %s - %s\n", test->name, test->result ? "true" : "false" );
-			for( msg_iter = test->result_msg; msg_iter; msg_iter = msg_iter->next ) {
+			g_printf( "Test: %s - %s\n", test->name, test->result.passed ? "true" : "false" );
+			g_printf( "Test start: %" PRIu64 ", end: %" PRIu64 ", length: %" PRIu64 "us\n",
+					test->result.start, test->result.end, test->result.end - test->result.start );
+			for( msg_iter = test->result.msgs; msg_iter; msg_iter = msg_iter->next ) {
 				g_printf( "  -> %s\n", (gchar*)msg_iter->data );
 			}
 		}
