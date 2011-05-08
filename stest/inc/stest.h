@@ -17,19 +17,19 @@ void s_test_assert_string_contains( void* handle, char* expected, char* actual, 
 void s_test_assert_string_doesnt_contain( void* handle, char* expected, char* actual, const char* function, unsigned int line);
 
 #define assert_true(handle,test) do { \
-	s_test_assert_true(handle,test, __FUNCTION__, __LINE__); \
+	s_test_assert_true(handle,test, __func__, __LINE__); \
 } while (0)
 
 #define assert_false(handle,test) do { \
-	s_test_assert_false(handle,test, __FUNCTION__, __LINE__); \
+	s_test_assert_false(handle,test, __func__, __LINE__); \
 } while (0)
 
 #define assert_int_equal(handle,expected, actual) do { \
-	s_test_assert_int_equal(handle,expected, actual, __FUNCTION__, __LINE__); \
+	s_test_assert_int_equal(handle,expected, actual, __func__, __LINE__); \
 } while (0)
 
 #define assert_string_equal(handle,expected, actual) do { \
-	s_test_assert_string_equal(handle,expected, actual, __FUNCTION__, __LINE__); \
+	s_test_assert_string_equal(handle,expected, actual, __func__, __LINE__); \
 } while (0)
 
 #define assert_n_array_equal(handle,expected, actual, n) do { \
@@ -37,48 +37,48 @@ void s_test_assert_string_doesnt_contain( void* handle, char* expected, char* ac
 	for(count=0; count<n; count++) { \
 		char s[100]; \
 		sprintf(s,"Expected %d to be %d at position %d", actual[count], expected[count], count); \
-		s_test_simple_test_result(handle,(expected[count] == actual[count]), s, __FUNCTION__, __LINE__); \
+		s_test_simple_test_result(handle,(expected[count] == actual[count]), s, __func__, __LINE__); \
 	} \
 } while (0)
 
 #define assert_bit_set(handle,bit_number, value) do { \
-	s_test_simple_test_result(handle,((1 << bit_number) & value), " Expected bit to be set" , __FUNCTION__, __LINE__); \
+	s_test_simple_test_result(handle,((1 << bit_number) & value), " Expected bit to be set" , __func__, __LINE__); \
 } while (0)
 
 #define assert_bit_not_set(handle,bit_number, value) do { \
-	s_test_simple_test_result(handle,!((1 << bit_number) & value), " Expected bit not to to be set" ,  __FUNCTION__, __LINE__); \
+	s_test_simple_test_result(handle,!((1 << bit_number) & value), " Expected bit not to to be set" ,  __func__, __LINE__); \
 } while (0)
 
 #define assert_bit_mask_matches(handle,value, mask) do { \
-	s_test_simple_test_result(handle,((value & mask) == mask), " Expected all bits of mask to be set" ,  __FUNCTION__, __LINE__); \
+	s_test_simple_test_result(handle,((value & mask) == mask), " Expected all bits of mask to be set" ,  __func__, __LINE__); \
 } while (0)
 
 #define assert_fail(handle,message) do { \
-	s_test_simple_test_result(handle,0, message,  __FUNCTION__, __LINE__); \
+	s_test_simple_test_result(handle,0, message,  __func__, __LINE__); \
 } while (0)
 
 #define assert_float_equal(handle,expected, actual, delta) do { \
-	s_test_assert_float_equal(handle,expected, actual, delta, __FUNCTION__, __LINE__); \
+	s_test_assert_float_equal(handle,expected, actual, delta, __func__, __LINE__); \
 } while (0)
 
 #define assert_double_equal(handle,expected, actual, delta) do { \
-	s_test_assert_double_equal(handle,expected, actual, delta, __FUNCTION__, __LINE__); \
+	s_test_assert_double_equal(handle,expected, actual, delta, __func__, __LINE__); \
 } while (0)
 
 #define assert_string_contains(handle,expected, actual) do { \
-	s_test_assert_string_contains(handle,expected, actual, __FUNCTION__, __LINE__); \
+	s_test_assert_string_contains(handle,expected, actual, __func__, __LINE__); \
 } while (0)
 
 #define assert_string_doesnt_contain(handle,expected, actual) do { \
-	s_test_assert_string_doesnt_contain(handle,expected, actual, __FUNCTION__, __LINE__); \
+	s_test_assert_string_doesnt_contain(handle,expected, actual, __func__, __LINE__); \
 } while (0)
 
 #define assert_string_starts_with(handle,expected, actual) do { \
-	s_test_assert_string_starts_with(handle,expected, actual, __FUNCTION__, __LINE__); \
+	s_test_assert_string_starts_with(handle,expected, actual, __func__, __LINE__); \
 } while (0)
 
 #define assert_string_ends_with(handle,expected, actual) do { \
-	s_test_assert_string_ends_with(handle,expected, actual, __FUNCTION__, __LINE__); \
+	s_test_assert_string_ends_with(handle,expected, actual, __func__, __LINE__); \
 } while (0)
 
 /*
