@@ -3,43 +3,30 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdarg.h>
-#include <stdint.h>
-#include <stdbool.h>
-#include <inttypes.h>
 
 #include <sys/time.h>
 
-#include <glib.h>
 #include <glib/gprintf.h>
 
-struct STest {
-	GSList* groups;
-};
+#include "stest_internal.h"
+#include "xml_result.h"
 
-struct TestGroup {
-	gchar* name;
-	GSList* tests;
-};
+static struct Test* s_test_new_test( const char* name, s_test_fp test, s_test_fp setup, s_test_fp teardown );
 
-struct TestResult {
-	bool passed;
-	GSList* msgs;
+static struct Test* s_test_new_test( const char* name, s_test_fp test_func, s_test_fp setup, s_test_fp teardown ) {
+	struct Test* test = g_new( struct Test, 1 );
+	test->name = g_strndup( name, strlen( name ) );
+	test->setup = setup;
+	test->test = test_func;
+	test->teardown = teardown;
+	test->data = NULL;
+	test->result.passed = true;
+	test->result.msgs = NULL;
+	test->result.start = 0;
+	test->result.end = 0;
 
-	uint64_t start;
-	uint64_t end;
-};
-
-struct Test {
-	gchar* name;
-
-	s_test_fp setup;
-	s_test_fp test;
-	s_test_fp teardown;
-
-	void* data;
-
-	struct TestResult result;
-};
+	return test;
+}
 
 static char* test_file_name(char* path)
 {
@@ -268,38 +255,20 @@ void s_test_set_data( void* handle, void* data ) {
 void s_test_add_test( void* handle, const char* test_name, s_test_fp test_func ) {
 	struct TestGroup* group = (struct TestGroup*)handle;
 
-	/*Create test struct*/
-	struct Test* test = g_new( struct Test, 1 );
-	test->name = g_strndup( test_name, strlen( test_name ) );
-	test->setup = NULL;
-	test->test = test_func;
-	test->teardown = NULL;
-	test->data = NULL;
-	test->result.passed = true;
-	test->result.msgs = NULL;
-	test->result.start = 0;
-	test->result.end = 0;
-
-	group->tests = g_slist_append( group->tests, test );
+	group->tests = g_slist_append(
+			group->tests,
+			s_test_new_test( test_name, test_func, NULL, NULL )
+		);
 }
 
 void s_test_add_test_f( void* handle, const char* test_name,
 		s_test_fp test_func, s_test_fp test_setup, s_test_fp test_teardown ) {
 	struct TestGroup* group = (struct TestGroup*)handle;
 
-	/*Create test struct*/
-	struct Test* test = g_new( struct Test, 1 );
-	test->name = g_strndup( test_name, strlen( test_name ) );
-	test->setup = test_setup;
-	test->test = test_func;
-	test->teardown = test_teardown;
-	test->data = NULL;
-	test->result.passed = true;
-	test->result.msgs = NULL;
-	test->result.start = 0;
-	test->result.end = 0;
-
-	group->tests = g_slist_append( group->tests, test );
+	group->tests = g_slist_append(
+			group->tests,
+			s_test_new_test( test_name, test_func, test_setup, test_teardown )
+		);
 }
 
 void s_test_add_group( void* handle, const char* group_name, s_test_fp test_group ) {
@@ -351,24 +320,12 @@ int s_test_main( int argc, const char* argv[], void* handle )
 	}
 
 	// TODO Fix statistics
-	for( group_iter = stest->groups; group_iter; group_iter = group_iter->next ) {
-		for( test_iter = ((struct TestGroup*)group_iter->data)->tests; test_iter;
-				test_iter = test_iter->next ) {
-			struct Test* test = (struct Test*)test_iter->data;
-			GSList* msg_iter = NULL;
-			
-			g_printf( "Test: %s - %s\n", test->name, test->result.passed ? "true" : "false" );
-			g_printf( "Test start: %" PRIu64 ", end: %" PRIu64 ", length: %" PRIu64 "us\n",
-					test->result.start, test->result.end, test->result.end - test->result.start );
-			for( msg_iter = test->result.msgs; msg_iter; msg_iter = msg_iter->next ) {
-				g_printf( "  -> %s\n", (gchar*)msg_iter->data );
-			}
-		}
-	}
 
-	// TODO Generate rapport
+	// Generate rapport
+	s_test_write_xml_result( stest );
 
-	// TODO Show result on stdout
+	// Show result on stdout
+	s_test_write_stdout_result( stest );
 
 	return retval;
 }
