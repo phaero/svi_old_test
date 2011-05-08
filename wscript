@@ -65,10 +65,10 @@ def build(bld):
 	#bld.add_pre_fun(_run_astyle)
 
 	bld.stlib(
-			source = 'stest/stest.c',
+			source = bld.path.ant_glob( 'stest/src/*.c' ),
 			target = 'stest',
 			uselib = 'glib',
-			includes = 'stest /usr/include',
+			includes = 'stest/src stest/inc /usr/include',
 			cflags = [ '-Wall', '-Wextra', '-pedantic', '-std=c99', '-g' ],
 		)
 
@@ -77,7 +77,7 @@ def build(bld):
 			target = '%s_ut' % APPNAME,
 			use = 'stest',
 			uselib = 'glib',
-			includes = [ 'stest', 'src', '/usr/include', ],
+			includes = [ 'stest/inc', 'src', '/usr/include', ],
 			cflags = [ '-Wall', '-Wextra', '-pedantic', '-std=c99', '-g', ],
 		)
 
