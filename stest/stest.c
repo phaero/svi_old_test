@@ -41,7 +41,7 @@ struct Test {
 	struct TestResult result;
 };
 
-char* test_file_name(char* path)
+static char* test_file_name(char* path)
 {
 	char* file = path + strlen(path);
 
@@ -218,7 +218,7 @@ int s_test_should_run( char* fixture, char* test)
 }
 */
 
-int run_tests( s_test_fp tests )
+static int run_tests( s_test_fp tests )
 {
 	uint64_t start;
 	uint64_t end;

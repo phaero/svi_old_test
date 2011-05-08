@@ -17,6 +17,9 @@ out = 'build'
 
 def _run_cppcheck(bld):
 	if bld.env['CPPCHECK']:
+		print dir(bld)
+		print dir(bld.get_targets())
+		return
 		for lib in bld.all_task_gen:
 			for source_file in Utils.to_list(lib.source):
 				cmd = '%s %s' % (
@@ -24,6 +27,11 @@ def _run_cppcheck(bld):
 						os.path.join(lib.path.abspath(), source_file)
 					)
 				Utils.pproc.Popen(cmd, shell=True).wait()
+
+def _cppcheck( task ):
+	for source_file in task.inputs:
+		cmd = '%s -v -a --enable=style %s' % ( task.env[ 'CPPCHECK' ], source_file.abspath() )
+		task.exec_command( cmd )
 
 def _run_astyle(bld):
 	if bld.env['ASTYLE']:
@@ -47,26 +55,12 @@ def configure(conf):
 	conf.find_program('cppcheck', var='CPPCHECK')
 	conf.find_program('astyle', var='ASTYLE')
 
-#def build(bld):
-#	bld(
-#		includes        = '. src',
-#		export_includes = 'src',
-#		name            = 'com_includes')
-#
-#	bld.stlib(
-#		source          = 'a.c',
-#		target          = 'shlib1',
-#		use             = 'com_includes')
-#
-#	bld.program(
-#		source          = 'main.c',
-#		target          = 'app',
-#		use             = 'shlib1',
-#		)
-
 def build(bld):
-	#if Options.options.cppcheck:
-		#bld.add_pre_fun(_run_cppcheck)
+	if Options.options.cppcheck:
+		bld(
+				rule=_cppcheck,
+				source=bld.path.ant_glob( incl=('src/*.c', 'stest/*.c' ) ),
+			)
 
 	#bld.add_pre_fun(_run_astyle)
 
