@@ -61,7 +61,7 @@ void seatest_simple_test_result( void* handle, int passed, char* reason, const c
 		test->result = false;
 		test->result_msg = g_slist_append( test->result_msg, g_strndup( msg_, size_ ) );
 	} else {
-		test->result = true;
+		test->result = test->result ? true : false;
 	}
 }
 
@@ -268,7 +268,7 @@ void s_test_add_test( void* handle, const char* test_name, s_test_fp test_func )
 	test->test = test_func;
 	test->teardown = NULL;
 	test->data = NULL;
-	test->result = false;
+	test->result = true;
 	test->result_msg = NULL;
 
 	group->tests = g_slist_append( group->tests, test );
@@ -285,7 +285,7 @@ void s_test_add_test_f( void* handle, const char* test_name,
 	test->test = test_func;
 	test->teardown = test_teardown;
 	test->data = NULL;
-	test->result = false;
+	test->result = true;
 	test->result_msg = NULL;
 
 	group->tests = g_slist_append( group->tests, test );
@@ -337,8 +337,12 @@ int s_test_main( int argc, const char* argv[], void* handle )
 		for( test_iter = ((struct TestGroup*)group_iter->data)->tests; test_iter;
 				test_iter = test_iter->next ) {
 			struct Test* test = (struct Test*)test_iter->data;
+			GSList* msg_iter = NULL;
 			
 			g_printf( "Test: %s - %s\n", test->name, test->result ? "true" : "false" );
+			for( msg_iter = test->result_msg; msg_iter; msg_iter = msg_iter->next ) {
+				g_printf( "  -> %s\n", (gchar*)msg_iter->data );
+			}
 		}
 	}
 
