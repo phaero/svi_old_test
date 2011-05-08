@@ -2,93 +2,83 @@
 #define SEATEST_SEATEST_H_INCLUDES
 
 /*
-Declarations
-*/
-void seatest_test_fixture_start(char* filepath);
-void seatest_test_fixture_end( void );
-void seatest_simple_test_result(int passed, char* reason, const char* function, unsigned int line);
-int seatest_should_run( char* fixture, char* test);
-void seatest_run_test(void);
-void seatest_setup();
-void seatest_teardown();
-
-/*
 Assert Declarations/Macros
 */
-void seatest_assert_true(int test, const char* function, unsigned int line);
-void seatest_assert_false(int test, const char* function, unsigned int line);
-void seatest_assert_int_equal(int expected, int actual, const char* function, unsigned int line);
-void seatest_assert_float_equal(float expected, float actual, float delta, const char* function, unsigned int line);
-void seatest_assert_double_equal(double expected, double actual, double delta, const char* function, unsigned int line);
-void seatest_assert_string_equal(char* expected, char* actual, const char* function, unsigned int line);
-void seatest_assert_string_ends_with(char* expected, char* actual, const char* function, unsigned int line);
-void seatest_assert_string_starts_with(char* expected, char* actual, const char* function, unsigned int line);
-void seatest_assert_string_contains(char* expected, char* actual, const char* function, unsigned int line);
-void seatest_assert_string_doesnt_contain(char* expected, char* actual, const char* function, unsigned int line);
+void seatest_simple_test_result( void* handle, int passed, char* reason, const char* function, unsigned int line);
+void seatest_assert_true( void* handle, int test, const char* function, unsigned int line);
+void seatest_assert_false( void* handle, int test, const char* function, unsigned int line);
+void seatest_assert_int_equal( void* handle, int expected, int actual, const char* function, unsigned int line);
+void seatest_assert_float_equal( void* handle, float expected, float actual, float delta, const char* function, unsigned int line);
+void seatest_assert_double_equal( void* handle, double expected, double actual, double delta, const char* function, unsigned int line);
+void seatest_assert_string_equal( void* handle, char* expected, char* actual, const char* function, unsigned int line);
+void seatest_assert_string_ends_with( void* handle, char* expected, char* actual, const char* function, unsigned int line);
+void seatest_assert_string_starts_with( void* handle, char* expected, char* actual, const char* function, unsigned int line);
+void seatest_assert_string_contains( void* handle, char* expected, char* actual, const char* function, unsigned int line);
+void seatest_assert_string_doesnt_contain( void* handle, char* expected, char* actual, const char* function, unsigned int line);
 
-#define assert_true(test) do { \
-	seatest_assert_true(test, __FUNCTION__, __LINE__); \
+#define assert_true(handle,test) do { \
+	seatest_assert_true(handle,test, __FUNCTION__, __LINE__); \
 } while (0)
 
-#define assert_false(test) do { \
-	seatest_assert_false(test, __FUNCTION__, __LINE__); \
+#define assert_false(handle,test) do { \
+	seatest_assert_false(handle,test, __FUNCTION__, __LINE__); \
 } while (0)
 
-#define assert_int_equal(expected, actual) do { \
-	seatest_assert_int_equal(expected, actual, __FUNCTION__, __LINE__); \
+#define assert_int_equal(handle,expected, actual) do { \
+	seatest_assert_int_equal(handle,expected, actual, __FUNCTION__, __LINE__); \
 } while (0)
 
-#define assert_string_equal(expected, actual) do { \
-	seatest_assert_string_equal(expected, actual, __FUNCTION__, __LINE__); \
+#define assert_string_equal(handle,expected, actual) do { \
+	seatest_assert_string_equal(handle,expected, actual, __FUNCTION__, __LINE__); \
 } while (0)
 
-#define assert_n_array_equal(expected, actual, n) do { \
+#define assert_n_array_equal(handle,expected, actual, n) do { \
 	int count; \
 	for(count=0; count<n; count++) { \
 		char s[100]; \
 		sprintf(s,"Expected %d to be %d at position %d", actual[count], expected[count], count); \
-		seatest_simple_test_result((expected[count] == actual[count]), s, __FUNCTION__, __LINE__); \
+		seatest_simple_test_result(handle,(expected[count] == actual[count]), s, __FUNCTION__, __LINE__); \
 	} \
 } while (0)
 
-#define assert_bit_set(bit_number, value) do { \
-	seatest_simple_test_result(((1 << bit_number) & value), " Expected bit to be set" , __FUNCTION__, __LINE__); \
+#define assert_bit_set(handle,bit_number, value) do { \
+	seatest_simple_test_result(handle,((1 << bit_number) & value), " Expected bit to be set" , __FUNCTION__, __LINE__); \
 } while (0)
 
-#define assert_bit_not_set(bit_number, value) do { \
-	seatest_simple_test_result(!((1 << bit_number) & value), " Expected bit not to to be set" ,  __FUNCTION__, __LINE__); \
+#define assert_bit_not_set(handle,bit_number, value) do { \
+	seatest_simple_test_result(handle,!((1 << bit_number) & value), " Expected bit not to to be set" ,  __FUNCTION__, __LINE__); \
 } while (0)
 
-#define assert_bit_mask_matches(value, mask) do { \
-	seatest_simple_test_result(((value & mask) == mask), " Expected all bits of mask to be set" ,  __FUNCTION__, __LINE__); \
+#define assert_bit_mask_matches(handle,value, mask) do { \
+	seatest_simple_test_result(handle,((value & mask) == mask), " Expected all bits of mask to be set" ,  __FUNCTION__, __LINE__); \
 } while (0)
 
-#define assert_fail(message) do { \
-	seatest_simple_test_result(0, message,  __FUNCTION__, __LINE__); \
+#define assert_fail(handle,message) do { \
+	seatest_simple_test_result(handle,0, message,  __FUNCTION__, __LINE__); \
 } while (0)
 
-#define assert_float_equal(expected, actual, delta) do { \
-	seatest_assert_float_equal(expected, actual, delta, __FUNCTION__, __LINE__); \
+#define assert_float_equal(handle,expected, actual, delta) do { \
+	seatest_assert_float_equal(handle,expected, actual, delta, __FUNCTION__, __LINE__); \
 } while (0)
 
-#define assert_double_equal(expected, actual, delta) do { \
-	seatest_assert_double_equal(expected, actual, delta, __FUNCTION__, __LINE__); \
+#define assert_double_equal(handle,expected, actual, delta) do { \
+	seatest_assert_double_equal(handle,expected, actual, delta, __FUNCTION__, __LINE__); \
 } while (0)
 
-#define assert_string_contains(expected, actual) do { \
-	seatest_assert_string_contains(expected, actual, __FUNCTION__, __LINE__); \
+#define assert_string_contains(handle,expected, actual) do { \
+	seatest_assert_string_contains(handle,expected, actual, __FUNCTION__, __LINE__); \
 } while (0)
 
-#define assert_string_doesnt_contain(expected, actual) do { \
-	seatest_assert_string_doesnt_contain(expected, actual, __FUNCTION__, __LINE__); \
+#define assert_string_doesnt_contain(handle,expected, actual) do { \
+	seatest_assert_string_doesnt_contain(handle,expected, actual, __FUNCTION__, __LINE__); \
 } while (0)
 
-#define assert_string_starts_with(expected, actual) do { \
-	seatest_assert_string_starts_with(expected, actual, __FUNCTION__, __LINE__); \
+#define assert_string_starts_with(handle,expected, actual) do { \
+	seatest_assert_string_starts_with(handle,expected, actual, __FUNCTION__, __LINE__); \
 } while (0)
 
-#define assert_string_ends_with(expected, actual) do { \
-	seatest_assert_string_ends_with(expected, actual, __FUNCTION__, __LINE__); \
+#define assert_string_ends_with(handle,expected, actual) do { \
+	seatest_assert_string_ends_with(handle,expected, actual, __FUNCTION__, __LINE__); \
 } while (0)
 
 /*
