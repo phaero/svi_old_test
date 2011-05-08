@@ -1,3 +1,5 @@
+#include <glib/gprintf.h>
+
 #include "stdout_result.h"
 
 void s_test_write_stdout_result( struct STest* stest ) {

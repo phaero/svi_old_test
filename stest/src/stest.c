@@ -1,14 +1,11 @@
-#include "stest.h"
-
 #include <stdio.h>
 #include <string.h>
 #include <stdarg.h>
 
 #include <sys/time.h>
 
-#include <glib/gprintf.h>
-
 #include "stest_internal.h"
+#include "stdout_result.h"
 #include "xml_result.h"
 
 static struct Test* s_test_new_test( const char* name, s_test_fp test, s_test_fp setup, s_test_fp teardown );
