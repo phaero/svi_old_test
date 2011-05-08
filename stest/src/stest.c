@@ -7,6 +7,7 @@
 #include "stest_internal.h"
 #include "stdout_result.h"
 #include "xml_result.h"
+#include "update_statistics.h"
 
 static struct Test* s_test_new_test( const char* name, s_test_fp test, s_test_fp setup, s_test_fp teardown );
 
@@ -21,6 +22,7 @@ static struct Test* s_test_new_test( const char* name, s_test_fp test_func, s_te
 	test->result.msgs = NULL;
 	test->result.start = 0;
 	test->result.end = 0;
+	test->result.time = 0;
 
 	return test;
 }
@@ -235,6 +237,12 @@ static int run_tests( s_test_fp tests )
 
 void s_test_init( void** handle ) {
 	struct STest* stest = g_new( struct STest, 1 );
+
+	stest->stat.tests = 0;
+	stest->stat.failures = 0;
+	stest->stat.test_groups = 0;
+	stest->stat.time = 0;
+
 	*handle = stest;
 }
 
@@ -273,8 +281,12 @@ void s_test_add_group( void* handle, const char* group_name, s_test_fp test_grou
 
 	/*Create a new test group*/
 	struct TestGroup* group = g_new( struct TestGroup, 1 );
+
 	group->name = g_strndup( group_name, strlen( group_name ) );
 	group->tests = NULL;
+	group->stat.tests = 0;
+	group->stat.failures = 0;
+	group->stat.time = 0;
 
 	stest->groups = g_slist_append( stest->groups, group );
 
@@ -316,7 +328,8 @@ int s_test_main( int argc, const char* argv[], void* handle )
 		}
 	}
 
-	// TODO Fix statistics
+	// Fix statistics
+	s_test_update_statistics( stest );
 
 	// Generate rapport
 	s_test_write_xml_result( stest );

@@ -9,13 +9,28 @@
 
 #include "stest.h"
 
+struct STestStat {
+	uint64_t tests;
+	uint64_t failures;
+	uint64_t test_groups;
+	uint64_t time;
+};
+
 struct STest {
 	GSList* groups;
+	struct STestStat stat;
+};
+
+struct TestGroupStat {
+	uint64_t tests;
+	uint64_t failures;
+	uint64_t time;
 };
 
 struct TestGroup {
 	gchar* name;
 	GSList* tests;
+	struct TestGroupStat stat;
 };
 
 struct TestResult {
@@ -24,6 +39,7 @@ struct TestResult {
 
 	uint64_t start;
 	uint64_t end;
+	uint64_t time;
 };
 
 struct Test {
