@@ -2,7 +2,7 @@
 
 #include <stdio.h>
 
-#include <seatest.h>
+#include <stest.h>
 
 void test_strings_equal( void* handle );
 void test_arrays_equal( void* handle );

@@ -1,6 +1,6 @@
 #include <stdio.h>
 
-#include <seatest.h>
+#include <stest.h>
 
 /**
  * Declare the test group functions here to avoid a extra header file for each test file.

@@ -1,4 +1,4 @@
-#include "seatest.h"
+#include "stest.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -56,7 +56,7 @@ char* test_file_name(char* path)
 	return file;
 }
 
-void seatest_simple_test_result( void* handle, int passed, char* reason, const char* function, unsigned int line)
+void s_test_simple_test_result( void* handle, int passed, char* reason, const char* function, unsigned int line)
 {
 	struct Test* test = (struct Test*)handle;
 	if (!passed) {
@@ -72,25 +72,25 @@ void seatest_simple_test_result( void* handle, int passed, char* reason, const c
 	}
 }
 
-void seatest_assert_true( void* handle, int test, const char* function, unsigned int line)
+void s_test_assert_true( void* handle, int test, const char* function, unsigned int line)
 {
-	seatest_simple_test_result( handle, test, "Should of been true", function, line);
+	s_test_simple_test_result( handle, test, "Should of been true", function, line);
 }
 
-void seatest_assert_false( void* handle, int test, const char* function, unsigned int line)
+void s_test_assert_false( void* handle, int test, const char* function, unsigned int line)
 {
-	seatest_simple_test_result( handle, !test, "Should of been false", function, line);
+	s_test_simple_test_result( handle, !test, "Should of been false", function, line);
 }
 
 
-void seatest_assert_int_equal( void* handle, int expected, int actual, const char* function, unsigned int line)
+void s_test_assert_int_equal( void* handle, int expected, int actual, const char* function, unsigned int line)
 {
 	char s[100];
 	sprintf(s, "Expected %d but was %d", expected, actual);
-	seatest_simple_test_result( handle,expected==actual, s, function, line);
+	s_test_simple_test_result( handle,expected==actual, s, function, line);
 }
 
-void seatest_assert_float_equal( void* handle, float expected, float actual, float delta, const char* function, unsigned int line )
+void s_test_assert_float_equal( void* handle, float expected, float actual, float delta, const char* function, unsigned int line )
 {
 	char s[100];
 	float result = expected-actual;
@@ -100,10 +100,10 @@ void seatest_assert_float_equal( void* handle, float expected, float actual, flo
 		result = 0.0 - result;
 	}
 
-	seatest_simple_test_result( handle, result <= delta, s, function, line);
+	s_test_simple_test_result( handle, result <= delta, s, function, line);
 }
 
-void seatest_assert_double_equal( void* handle, double expected, double actual, double delta, const char* function, unsigned int line )
+void s_test_assert_double_equal( void* handle, double expected, double actual, double delta, const char* function, unsigned int line )
 {
 	char s[100];
 	double result = expected-actual;
@@ -113,46 +113,46 @@ void seatest_assert_double_equal( void* handle, double expected, double actual, 
 		result = 0.0 - result;
 	}
 
-	seatest_simple_test_result( handle, result <= delta, s, function, line);
+	s_test_simple_test_result( handle, result <= delta, s, function, line);
 }
 
-void seatest_assert_string_equal(void* handle, char* expected, char* actual, const char* function, unsigned int line)
+void s_test_assert_string_equal(void* handle, char* expected, char* actual, const char* function, unsigned int line)
 {
 	char s[100];
 	sprintf(s, "Expected %s but was %s", expected, actual);
-	seatest_simple_test_result(handle, strcmp(expected, actual)==0, s, function, line);
+	s_test_simple_test_result(handle, strcmp(expected, actual)==0, s, function, line);
 }
 
-void seatest_assert_string_ends_with( void* handle, char* expected, char* actual, const char* function, unsigned int line)
+void s_test_assert_string_ends_with( void* handle, char* expected, char* actual, const char* function, unsigned int line)
 {
 	char s[100];
 	sprintf(s, "Expected %s to end with %s", actual, expected);
-	seatest_simple_test_result( handle, strcmp(expected, actual+(strlen(actual)-strlen(expected)))==0, s, function, line);
+	s_test_simple_test_result( handle, strcmp(expected, actual+(strlen(actual)-strlen(expected)))==0, s, function, line);
 }
 
-void seatest_assert_string_starts_with( void* handle, char* expected, char* actual, const char* function, unsigned int line)
+void s_test_assert_string_starts_with( void* handle, char* expected, char* actual, const char* function, unsigned int line)
 {
 	char s[100];
 	sprintf(s, "Expected %s to start with %s", actual, expected);
-	seatest_simple_test_result( handle, strncmp(expected, actual, strlen(expected))==0, s, function, line);
+	s_test_simple_test_result( handle, strncmp(expected, actual, strlen(expected))==0, s, function, line);
 }
 
-void seatest_assert_string_contains( void* handle, char* expected, char* actual, const char* function, unsigned int line)
+void s_test_assert_string_contains( void* handle, char* expected, char* actual, const char* function, unsigned int line)
 {
 	char s[100];
 	sprintf(s, "Expected %s to be in %s", expected, actual);
-	seatest_simple_test_result( handle, strstr(actual, expected)!=NULL, s, function, line);
+	s_test_simple_test_result( handle, strstr(actual, expected)!=NULL, s, function, line);
 }
 
-void seatest_assert_string_doesnt_contain( void* handle, char* expected, char* actual, const char* function, unsigned int line)
+void s_test_assert_string_doesnt_contain( void* handle, char* expected, char* actual, const char* function, unsigned int line)
 {
 	char s[100];
 	sprintf(s, "Expected %s not to have %s in it", actual, expected);
-	seatest_simple_test_result(handle, strstr(actual, expected)==NULL, s, function, line);
+	s_test_simple_test_result(handle, strstr(actual, expected)==NULL, s, function, line);
 }
 
 /*
-void seatest_header_printer(char* s, int length, char f)
+void s_test_header_printer(char* s, int length, char f)
 {
 	int l = strlen(s);
 	int d = (length- (l + 2)) / 2;
@@ -172,47 +172,47 @@ void seatest_header_printer(char* s, int length, char f)
 }
 
 
-void seatest_test_fixture_start(char* filepath)
+void s_test_test_fixture_start(char* filepath)
 {
-	seatest_current_fixture = test_file_name(filepath);
-	seatest_header_printer(seatest_current_fixture, 50, '-');
-	seatest_fixture_tests_failed = sea_tests_failed;
-	seatest_fixture_tests_run = sea_tests_run;
-	seatest_fixture_teardown = 0;
-	seatest_fixture_setup = 0;
+	s_test_current_fixture = test_file_name(filepath);
+	s_test_header_printer(s_test_current_fixture, 50, '-');
+	s_test_fixture_tests_failed = sea_tests_failed;
+	s_test_fixture_tests_run = sea_tests_run;
+	s_test_fixture_teardown = 0;
+	s_test_fixture_setup = 0;
 }
 
-void seatest_test_fixture_end()
+void s_test_test_fixture_end()
 {
 	char s[100];
-	sprintf(s, "%d run  %d failed", sea_tests_run-seatest_fixture_tests_run, sea_tests_failed-seatest_fixture_tests_failed);
-	seatest_header_printer(s, 50, ' ');
+	sprintf(s, "%d run  %d failed", sea_tests_run-s_test_fixture_tests_run, sea_tests_failed-s_test_fixture_tests_failed);
+	s_test_header_printer(s, 50, ' ');
 	printf("\r\n");
 }
 
-static char* seatest_fixture_filter = 0;
-static char* seatest_test_filter = 0;
+static char* s_test_fixture_filter = 0;
+static char* s_test_test_filter = 0;
 
 void fixture_filter(char* filter)
 {
-	seatest_fixture_filter = filter;
+	s_test_fixture_filter = filter;
 }
 
 
 void test_filter(char* filter)
 {
-	seatest_test_filter = filter;
+	s_test_test_filter = filter;
 }
 
 
-int seatest_should_run( char* fixture, char* test)
+int s_test_should_run( char* fixture, char* test)
 {
 	int run = 1;
-	if (seatest_fixture_filter) {
-		if (strncmp(seatest_fixture_filter, fixture, strlen(seatest_fixture_filter)) != 0) run = 0;
+	if (s_test_fixture_filter) {
+		if (strncmp(s_test_fixture_filter, fixture, strlen(s_test_fixture_filter)) != 0) run = 0;
 	}
-	if (seatest_test_filter) {
-		if (strncmp(seatest_test_filter, test, strlen(seatest_test_filter)) != 0) run = 0;
+	if (s_test_test_filter) {
+		if (strncmp(s_test_test_filter, test, strlen(s_test_test_filter)) != 0) run = 0;
 	}
 	return run;
 }
