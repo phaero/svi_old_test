@@ -9,9 +9,11 @@
 #include "xml_result.h"
 #include "update_statistics.h"
 
-static struct Test* s_test_new_test( const char* name, s_test_fp test, s_test_fp setup, s_test_fp teardown );
+static struct Test* s_test_new_test( const char* name, s_test_fp test,
+		s_test_fp setup, s_test_fp teardown );
 
-static struct Test* s_test_new_test( const char* name, s_test_fp test_func, s_test_fp setup, s_test_fp teardown ) {
+static struct Test* s_test_new_test( const char* name, s_test_fp test_func,
+		s_test_fp setup, s_test_fp teardown ) {
 	struct Test* test = g_new( struct Test, 1 );
 	test->name = g_strndup( name, strlen( name ) );
 	test->setup = setup;
@@ -42,7 +44,8 @@ static char* test_file_name(char* path)
 	return file;
 }
 
-void s_test_simple_test_result( void* handle, int passed, char* reason, const char* function, unsigned int line)
+void s_test_simple_test_result( void* handle, int passed, char* reason,
+		const char* function, unsigned int line)
 {
 	struct Test* test = (struct Test*)handle;
 	if (!passed) {
