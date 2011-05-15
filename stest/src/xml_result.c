@@ -69,6 +69,17 @@ void s_test_write_xml_result( struct STest* stest ) {
 			// print test case header
 			g_fprintf( fdis, START_TEST, c_test->name, c_group->name, c_test->name, c_test->result.time );
 
+			// Show failure
+			if( ! c_test->result.passed ) {
+				g_fprintf( fdis, START_FAILURE, "Assert failed", "" );
+
+				for( GSList* msg_iter = c_test->result.msgs; msg_iter; msg_iter = msg_iter->next ) {
+					g_fprintf( fdis, "%s\n", (gchar*)msg_iter->data );
+				}
+
+				g_fprintf( fdis, "%s", END_FAILURE );
+			}
+
 			g_fprintf( fdis, "%s", END_TEST );
 		}
 
